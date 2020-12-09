@@ -1,0 +1,36 @@
+#studentOptions {
+  margin-right: 10px;
+}
+
+#books {
+  .item-input-control {
+    border: 0;
+    box-shadow: none;
+    background-color: transparent;
+  }
+
+  .book-title {
+    padding-top: 8px;
+  }
+
+  .list-group-item {
+    padding-top: 8px;
+    padding-bottom: 8px;
+
+    .btn-xs {
+      padding: 0;
+    }
+  }
+
+  .book-checkbox {
+    padding-top: 8px;
+  }
+
+  .book-commands {
+    padding-top: 4px;
+  }
+}
+
+.modal-footer {
+  display: block;
+}

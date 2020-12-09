@@ -1,0 +1,10 @@
+﻿using Vector.Application.Common.Interfaces;
+using System;
+
+namespace Vector.Infrastructure.Services
+{
+    public class DateTimeService : IDateTime
+    {
+        public DateTime Now => DateTime.Now;
+    }
+}

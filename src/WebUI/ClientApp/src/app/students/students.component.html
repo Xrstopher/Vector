@@ -1,0 +1,205 @@
+
+
+<p *ngIf="!students"><em>Loading...</em></p>
+
+<div *ngIf="students">
+
+  <div class="row">
+    <div class="col-sm-4">
+      <div class="clearfix">
+        <h2 class="float-left">Students</h2>
+        <button class="btn btn-default float-right" title="Add Student..."
+          (click)="showNewStudentModal(newStudentModalTemplate)">
+          <fa-icon [icon]="faPlus"></fa-icon>
+        </button>
+      </div>
+      <ul class="list-group">
+        <li *ngFor="let student of students; index as i" class="list-group-item"
+          [ngClass]="{ 'active': selectedStudent == student }" (click)="selectedStudent = student">
+          <div class="clearfix">
+            <div class="float-left">
+                {{ student.lastName }}, {{ student.firstName }}
+            </div>
+            <div class="float-right text-right">
+                <span class="badge badge-light">{{ bookCount(student) }}</span>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="col-sm-8" *ngIf="selectedStudent">
+      <div class="clearfix">
+        <h2 class="float-left">{{ selectedStudent.lastName }}, {{ selectedStudent.firstName }}</h2>
+        <button id="studentOptions" class="btn btn-default float-right" title="Student Options..."
+          (click)="showStudentOptionsModal(studentOptionsModalTemplate)">
+          <fa-icon [icon]="faEllipsisH"></fa-icon>
+        </button>
+      </div>
+      <ul id="books" class="list-group mb-2">
+        <li class="list-group-item" *ngFor="let book of selectedStudent.books; index as i">
+          <div class="d-flex">
+           
+            <div class="flex-fill">
+              <input id="{{ 'bookTitle' + i }}" *ngIf="book == selectedBook" type="text"
+                class="form-control item-input-control" [(ngModel)]="book.title" autofocus="autofocus" />
+              <div class="book-title" *ngIf="book != selectedItem" class="form-control book-input-control">
+                <span>{{ book.title }}</span>
+              </div>
+            </div>
+            <div class="book-commands">
+              <button *ngIf="book.id != 0" (click)="showBookDetailsModal(bookDetailsModalTemplate, book)"
+                class="btn btn-default btn-xs" role="button">
+                <fa-icon [icon]="faEllipsisH"></fa-icon>
+              </button>
+            </div>
+          </div>
+        </li>
+        <li class="list-group-item">
+          <button class="btn btn-default">Add Book...</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="debug">
+  <pre>{{ vm | json }}</pre>
+</div>
+
+<ng-template #studentOptionsModalTemplate>
+  <div class="modal-header clearfix">
+    <h4 class="modal-title float-left">Student Details</h4>
+    <button type="button" class="close float-right" aria-label="Close" (click)="studentOptionsModalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="firstName">First Name</label>
+      <input type="text" class="form-control" id="firstName" 
+        [(ngModel)]="studentOptionsEditor.firstName" />
+        <label for="middleName">First Name</label>
+        <input type="text" class="form-control" id="middleName" 
+        [(ngModel)]="studentOptionsEditor.middleName" />
+        <label for="lastName">Last Name</label>
+        <input type="text" class="form-control" id="lastName" 
+        [(ngModel)]="studentOptionsEditor.lastName" />
+        <label for="email">Email</label>
+        <input type="text" class="form-control" id="email" 
+        [(ngModel)]="studentOptionsEditor.email" />
+    </div>
+    <div *ngIf="debug">
+      <pre>{{ studentOptionsEditor | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="clearfix">
+      <div class="float-left">
+        <button class="btn btn-default text-danger" (click)="confirmDeleteStudent(deleteStudentModalTemplate)">Delete</button>
+      </div>
+      <div class="float-right">
+        <button class="btn btn-default" (click)="studentOptionsModalRef.hide()">Cancel</button>
+        <button class="btn btn-primary" (click)="updateStudentOptions()">Update</button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+
+<ng-template #deleteStudentModalTemplate>
+  <div class="modal-header clearfix">
+    <h4 class="modal-title float-left">Delete {{ selectedStudent?.lastName }}, {{ selectedStudent?.firstName }}?</h4>
+    <button type="button" class="close float-right" aria-label="Close" (click)="deleteStudentModalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>All items will be permanently deleted. </p>
+    <div *ngIf="debug">
+      <pre>{{ selectedStudent | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="text-right">
+      <button type="button" class="btn btn-default" (click)="deleteStudentModalRef.hide()">Cancel</button>
+      <button type="button" class="btn btn-danger" (click)="deleteStudentConfirmed()">Delete</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #newStudentModalTemplate>
+  <div class="modal-header clearfix">
+    <h4 class="modal-title float-left">New Student</h4>
+    <button type="button" class="close float-right" aria-label="Close" (click)="newStudentCancelled()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="firstName">First Name</label>
+      <input type="text" class="form-control" id="firstName"
+        [(ngModel)]="newStudentEditor.firstName" />
+        <label for="middleName">Middle Name</label>
+        <input type="text" class="form-control" id="middleName"
+        [(ngModel)]="newStudentEditor.middleName" />
+        <label for="lastName">Last Name</label>
+        <input type="text" class="form-control" id="lastName" 
+        [(ngModel)]="newStudentEditor.lastName" />
+        <label for="email">Email</label>
+        <input type="text" class="form-control" id="email" 
+        [(ngModel)]="newStudentEditor.email" />
+      <div *ngIf="newStudentEditor.error" class="invalid-feedback">
+        {{ newStudentEditor.error }}
+      </div>
+    </div>
+    <div *ngIf="debug">
+      <pre>{{ newStudentEditor | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="text-right">
+      <button class="btn btn-default" (click)="newStudentCancelled()">Cancel</button>
+      <button class="btn btn-primary" (click)="addStudent()">Create</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #bookDetailsModalTemplate>
+  <div class="modal-header clearfix">
+    <h4 class="modal-title float-left">Book Details</h4>
+    <button type="button" class="close float-right" aria-label="Close" (click)="bookDetailsModalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form">
+      <div class="form-group">
+        <label for="note">Title</label>
+        <textarea id="note" class="form-control" rows="3" [(ngModel)]="bookDetailsEditor.title"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="note">ISBN</label>
+        <textarea id="note" class="form-control" rows="3" [(ngModel)]="bookDetailsEditor.isbn"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="note">Date of Publication</label>
+        <textarea id="note" class="form-control" rows="3" [(ngModel)]="bookDetailsEditor.publicationDate"></textarea>
+      </div>
+    </div>
+    <div *ngIf="debug">
+      <pre>{{ bookDetailsEditor | json }}</pre>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="clearfix">
+      <div class="float-left">
+        <button class="btn btn-default text-danger">Delete</button>
+      </div>
+      <div class="float-right">
+        <button class="btn btn-default" (click)="bookDetailsModalRef.hide()">Cancel</button>
+        <button class="btn btn-primary" >Update</button>
+      </div>
+    </div>
+  </div>
+</ng-template>
